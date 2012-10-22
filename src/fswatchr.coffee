@@ -19,7 +19,7 @@ async = require('async')
 DirWalker = require('dirwalker')
 # ---
 
-# ## FSWatcher Class
+# ## FSWatchr Class
 module.exports = class FSWatchr extends EventEmitter
 
   # ### Class Properties
@@ -28,15 +28,22 @@ module.exports = class FSWatchr extends EventEmitter
   # `@watcher (Object)` : [`fs.FSWatcher`](http://nodejs.org/api/fs.html#fs_class_fs_fswatcher) object
  
   # ### Events
-  # `file created` : a file is created  
-  # `file changed` : a file is changed  
-  # `file removed` : a file is removed  
-  # `dir created` : a directory is created  
-  # `dir changed` : a directory is changed  
-  # `dir removed` : a directory is removed  
+  # `[filetype] found` : a file is found   
+  # `[filetype] created` : a file is created  
+  # `[filetype] changed` : a file is changed  
+  # `[filetype] unchanged` : a file is accessed but not changed  
+  # `[filetype] removed` : a file is removed
+  # `found` : a file is found   
+  # `created` : a file is created  
+  # `changed` : a file is changed  
+  # `unchanged` : a file is accessed but not changed  
+  # `removed` : a file is removed  
   # `watchstart` : `fs.watch` started for a directory  
   # `watchset` : all the `fs.watch`es are set  
-    
+
+  # ### File Types
+  # `File` `Directory` `BlockDevice` `FIFO` `Socket` `CharacterDevice` `SymbolicLink`
+ 
   # #### constructor
   # `@dir` : see *Class Properties* section  
   constructor: (@dir = process.cwd()) ->
@@ -116,6 +123,7 @@ module.exports = class FSWatchr extends EventEmitter
             unless not type
               # emit `created`, `changed` and `removed` events for files and directories
               @emit("#{type} #{action}", p, stat)
+              @emit("#{action}", p, stat, type)
             if type is 'Directory'
               if action is 'created'
                 @watch(p)
