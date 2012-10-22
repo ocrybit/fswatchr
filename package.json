@@ -1,6 +1,6 @@
 {
   "name" : "fswatchr",
-  "version" : "0.0.1",
+  "version" : "0.0.2",
   "description" : "A recursive fs.watch",
   "keywords" : ["watch", "fs", "File System", "recursive"],
   "bugs" : {"url" : "https://github.com/tomoio/fswatchr/issues"},

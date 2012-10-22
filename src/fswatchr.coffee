@@ -87,6 +87,12 @@ module.exports = class FSWatchr extends EventEmitter
     dirwalker = new DirWalker(dirname)
     if @filter
       dirwalker.setFilter(@filter)
+    for v in dirwalker.FILE_TYPES
+      ((type) =>
+        dirwalker.on(type, (file, stat) =>
+          @emit("#{type} found", file, stat)
+        )
+      )(v)
     dirwalker.on('read', (dirpath, dirstats) =>
       @stats[dirpath] = dirstats
       @watchers[dirpath] = fs.watch(dirpath, (event, filename) =>

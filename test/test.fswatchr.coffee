@@ -155,6 +155,13 @@ describe('FSWatchr', ->
       )
       fswatchr.watch()
     )
+    it.only('emit "File found" event', (done) ->
+      fswatchr.once('File found', (file) ->
+        file.should.be.equal(HOTCOFFEE)
+        done()
+      )
+      fswatchr.watch()
+    )
     it("shouldn't emit if @filter is set", (done) ->
       fswatchr.setFilter((file, stats) ->
         return file is BLACKCOFFEE
