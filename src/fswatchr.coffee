@@ -110,10 +110,10 @@ module.exports = class FSWatchr extends EventEmitter
             if action is 'removed' and @stats[dirpath]?[p]?
               # Remove the stored stats
               delete @stats[dirpath][p]
-            else if stats?
+            else if stat?
               # Replace the stored stats with new stats
-              @stats[path.dirname(filename)][filename] = stat
-            unless not type or action is 'unchanged'
+              @stats[dirpath][p] = stat
+            unless not type
               # emit `created`, `changed` and `removed` events for files and directories
               @emit("#{type} #{action}", p, stat)
             if type is 'Directory'

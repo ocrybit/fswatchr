@@ -10,6 +10,8 @@ should = chai.should()
 FSWatchr = require('../lib/fswatchr')
 
 describe('FSWatchr', ->
+  GOOD_CODE = 'foo = 1'
+  BAD_CODE = 'foo ==== 1'  
   TMP = "#{__dirname}/tmp"
   FOO = "#{TMP}/foo"
   FOO2 = "#{TMP}/foo2"
@@ -155,7 +157,7 @@ describe('FSWatchr', ->
       )
       fswatchr.watch()
     )
-    it.only('emit "File found" event', (done) ->
+    it('emit "File found" event', (done) ->
       fswatchr.once('File found', (file) ->
         file.should.be.equal(HOTCOFFEE)
         done()
@@ -197,7 +199,7 @@ describe('FSWatchr', ->
       )
       fswatchr.watch()
     )
-    it('should emit "File changed" event', (done) ->
+    it('emit "File changed" event', (done) ->
       fswatchr.once('File changed', (file) ->
         file.should.equal(HOTCOFFEE)
         done()
@@ -207,6 +209,37 @@ describe('FSWatchr', ->
       )
       fswatchr.watch()
     )
+
+    it('replace the pre-stored file stat in @stats when "change"', (done) ->
+      filestat = null
+      fswatchr.once('File changed', (file) ->
+        file.should.equal(HOTCOFFEE)
+        filestat.should.not.eql(fswatchr.stats[TMP][HOTCOFFEE])
+        done()
+      )
+      fswatchr.on('watchset', ->
+        filestat = fswatchr.stats[TMP][HOTCOFFEE]
+        fs.utimes(HOTCOFFEE, Date.now(), Date.now())
+      )
+      fswatchr.watch()
+    )
+
+    it('shouldn\'t emit "File changed" event twice', (done) ->
+      count = 0
+      fswatchr.on('File changed', (file) ->
+        console.log(file)
+        count += 1
+        if count is 2
+          false.should.be.ok
+          done()
+      )
+      fswatchr.on('watchset', ->
+        fs.writeFile(HOTCOFFEE, GOOD_CODE)
+        done()
+      )
+      fswatchr.watch()
+    )
+
     it('emit "watchstart" event', (done) ->
       fswatchr.once('watchstart', (dir) ->
         dir.should.equal(TMP)
