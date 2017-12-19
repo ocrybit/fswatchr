@@ -129,7 +129,7 @@ A filter function can be set to ignore files and directories. If a directory is 
 Running Tests
 -------------
 
-Run tests with [mocha](http://visionmedia.github.com/mocha/)
+Run tests with [mocha](http://mochajs.org/)
 
     make
 	
